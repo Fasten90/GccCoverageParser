@@ -8,9 +8,6 @@ import re
 import argparse
 
 # TODOs
-# - Input argument: gcov_file_dir
-# - Input argument: source root dir (../..)
-# - Input argument: Export file name
 # - UnitTest - comments at above
 # - UnitTest - system executing test
 
@@ -76,8 +73,6 @@ def exec_gcov_on_source(files_root):
             # Call
             command = __COMMAND + " " + __COMMAND_ARG + " " + gcno_file_path
             print("Command: {}".format(command))
-            #subprocess.run(["ls", "-l"])
-            #subprocess.run([__COMMAND, command_arg])
             return_code = subprocess.call(command, shell=True)
             # Debug code
             #print("  Return code: {}".format(return_code))
@@ -340,9 +335,6 @@ def run_gcov_task(source_root_dir=".",
 
 
 if __name__ == "__main__":
-    # - Input argument: gcov_file_dir
-    # - Input argument: source root dir (/)
-    # - Input argument: Export file name
     parser = argparse.ArgumentParser()
 
     """CMakeFiles\FastenHomeAut.dir"""
