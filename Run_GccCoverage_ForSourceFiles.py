@@ -62,13 +62,14 @@ def find_sources():
         print(str_indent + "- " + name)
 
 
-def exec_gcov_on_source():
+def exec_gcov_on_source(files_root):
+
     for source in source_list:
         # Call for all source file
         #print(source)
         # TODO: Argument
         source = source.replace("\\", "/")
-        gcno_file_path = source + ".gcno"
+        gcno_file_path = os.path.join(files_root, source + ".gcno")
 
         #print("file: '{}'".format(gcno_file_path))
         if os.path.exists(gcno_file_path):
@@ -328,8 +329,8 @@ def run_gcov_task(source_root_dir=".",
     set_workdir(source_root_dir)
     find_sources()
 
-    set_workdir(gcno_files_root)
-    exec_gcov_on_source()
+    #set_workdir(gcno_files_root)
+    exec_gcov_on_source(gcno_files_root)
     wait()
 
     set_workdir(gcov_file_root)
@@ -365,7 +366,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    run_gcov_task(gcov_file_root=args.gcov_files_root,
+    print("Run GccCoveragePraser")
+    run_gcov_task(source_root_dir=args.source_root_dir,
                   gcno_files_root=args.gcno_files_root,
-                  source_root_dir=args.source_root_dir,
+                  gcov_file_root=args.gcov_files_root,
                   export_file_path=args.export_file_path)
