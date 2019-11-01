@@ -5,6 +5,8 @@ import time
 from enum import Enum
 import re
 
+import argparse
+
 # TODOs
 # - Input argument: gcov_file_dir
 # - Input argument: source root dir (../..)
@@ -25,20 +27,9 @@ source_list = []
 cwd_is_changed = False
 cwd = None
 
-# PATH correction
-def set_workdir():
-    # os.path.normpath()
-    global cwd
-    cwd = os.path.normcase(os.path.normpath(os.getcwd()))
-    script_dir = os.path.normcase(os.path.normpath(os.path.dirname(__file__)))
-
-    if cwd != script_dir:
-        # Go down from /Tools/...
-        os.chdir("../../")
-        global cwd_is_changed
-        cwd_is_changed = True
-        #os.chdir(script_dir)
-        print("Working directory changed from: '{}' to '{}'".format(cwd, script_dir))
+def set_workdir(dir):
+    print("Set working directory to: {}".format(dir))
+    os.chdir(dir)
 
 
 source_list = []
@@ -66,17 +57,6 @@ def find_sources():
 
         str_indent = "  " * (src_item.count("\\") + 1)
         print(str_indent + "- " + name)
-
-
-def restore_workdir():
-    # For PATH correction
-    if cwd_is_changed:
-        os.chdir(cwd)
-        print("Working directory restored to: '{}'".format(cwd))
-    else:
-        # TODO: Local mode?
-        os.chdir("Out/CMakeBuild_GccCoverage/")
-        print("Actual working directory: '{}'".format(os.getcwd()))
 
 
 def exec_gcov_on_source():
@@ -335,12 +315,15 @@ def print_gcov_results():
     gcov_export_file.close()
 
 
-def run_gcov_task():
-    set_workdir()
+def run_gcov_task(gcov_file_root=".",
+                  source_root_dir=".",
+                  export_file_path="GccCoverage.txt"):
+
+    set_workdir(source_root_dir)
 
     find_sources()
 
-    restore_workdir()
+    set_workdir(gcov_file_root)
 
     exec_gcov_on_source()
     wait()
@@ -353,14 +336,24 @@ def run_gcov_task():
 
 
 if __name__ == "__main__":
-    """
+    # - Input argument: gcov_file_dir
+    # - Input argument: source root dir (../..)
+    # - Input argument: Export file name
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-fl", "--file_list", help="List of analyzing files", default="**/*.log")
-    parser.add_argument("-cmp", "--compiler", help="Compiler", default="MSVC")
+    parser.add_argument("--gcov-files-root",
+                        help="where will be generated the gcov files\n" \
+                             "E.g. Out\CMakeDir",
+                        default=".")
+    parser.add_argument("--source-root-dir",
+                        help="Directory of sources",
+                        default=".")
+    parser.add_argument("--export-file-path",
+                        help="Result export file path",
+                        default="GccCoverage.txt")
 
     args = parser.parse_args()
-    check_files(file_list=args.file_list, compiler=args.compiler)
-    """
 
-    run_gcov_task()
+    run_gcov_task(gcov_file_root=args.gcov_files_root,
+                  source_root_dir=args.source_root_dir,
+                  export_file_path=args.export_file_path)
