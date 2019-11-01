@@ -31,7 +31,7 @@ def set_workdir(dir):
     print("Set working directory to: {}\n"
           "  Absolute path:".format(
             dir,
-            os.path.abspath(dir)))
+            os.path.normpath(dir)))
     os.chdir(dir)
 
 
