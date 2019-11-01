@@ -22,92 +22,106 @@ __gcov_file_dir = "CMakeFiles/FastenHomeAut.dir/"
 
 
 source_list = []
-
+cwd_is_changed = False
+cwd = None
 
 # PATH correction
+def set_workdir():
+    # os.path.normpath()
+    global cwd
+    cwd = os.path.normcase(os.path.normpath(os.getcwd()))
+    script_dir = os.path.normcase(os.path.normpath(os.path.dirname(__file__)))
 
-# os.path.normpath()
-cwd = os.path.normcase(os.path.normpath(os.getcwd()))
-script_dir = os.path.normcase(os.path.normpath(os.path.dirname(__file__)))
-cwd_is_changed = False
-
-if cwd != script_dir:
-    # Go down from /Tools/...
-    os.chdir("../../")
-    cwd_is_changed = True
-    #os.chdir(script_dir)
-    print("Working directory changed from: '{}' to '{}'".format(cwd, script_dir))
-
-# Source list
-source_list += glob.glob("Src/*.c")
-source_list += glob.glob("Src/**/*.c")
-source_list += glob.glob("Src/**/**/*.c")
-#source_list += Path('Src').glob('**/*.c')
+    if cwd != script_dir:
+        # Go down from /Tools/...
+        os.chdir("../../")
+        global cwd_is_changed
+        cwd_is_changed = True
+        #os.chdir(script_dir)
+        print("Working directory changed from: '{}' to '{}'".format(cwd, script_dir))
 
 
-# TODO: Shall we append another?
-print("Source list:")
-prev_dir = ""
-for src_item in source_list:
-    src_item = src_item.replace("\\\\", "\\").replace("/", "\\")
-    
-    [dir, name] = src_item.rsplit("\\", 1)
-    if dir != prev_dir:
-        prev_dir = dir
-        str_indent = "  " * src_item.count("\\")
-        print(str_indent + "[" + dir + "]")
-    
-    str_indent = "  " * (src_item.count("\\") + 1)
-    print(str_indent + "- " + name)
+source_list = []
+
+def find_sources():
+    # Source list
+    global source_list
+    source_list += glob.glob("Src/*.c")
+    source_list += glob.glob("Src/**/*.c")
+    source_list += glob.glob("Src/**/**/*.c")
+    #source_list += Path('Src').glob('**/*.c')
 
 
+    # TODO: Shall we append another?
+    print("Source list:")
+    prev_dir = ""
+    for src_item in source_list:
+        src_item = src_item.replace("\\\\", "\\").replace("/", "\\")
 
-# For PATH correction
-if cwd_is_changed:
-    os.chdir(cwd)
-    print("Working directory restored to: '{}'".format(cwd))
-else:
-    # TODO: Local mode?
-    os.chdir("Out/CMakeBuild_GccCoverage/")
-    print("Actual working directory: '{}'".format(os.getcwd()))
+        [dir, name] = src_item.rsplit("\\", 1)
+        if dir != prev_dir:
+            prev_dir = dir
+            str_indent = "  " * src_item.count("\\")
+            print(str_indent + "[" + dir + "]")
+
+        str_indent = "  " * (src_item.count("\\") + 1)
+        print(str_indent + "- " + name)
 
 
-for source in source_list:
-    # Call for all source file
-    #print(source)
-    # TODO: Argument
-    source = source.replace("\\", "/")
-    gcno_file_path = __gcov_file_dir + source + ".gcno"
-    
-    #print("file: '{}'".format(gcno_file_path))
-    if os.path.exists(gcno_file_path):
-        # Call
-        command = __COMMAND + " " + __COMMAND_ARG + " " + gcno_file_path
-        print("Command: {}".format(command))
-        #subprocess.run(["ls", "-l"])
-        #subprocess.run([__COMMAND, command_arg])
-        return_code = subprocess.call(command, shell=True)
-        # Debug code
-        #print("  Return code: {}".format(return_code))
+def restore_workdir():
+    # For PATH correction
+    if cwd_is_changed:
+        os.chdir(cwd)
+        print("Working directory restored to: '{}'".format(cwd))
     else:
-        # Do not call
-        print("'{}' has no gcno file".format(source))
+        # TODO: Local mode?
+        os.chdir("Out/CMakeBuild_GccCoverage/")
+        print("Actual working directory: '{}'".format(os.getcwd()))
 
 
-print("Wait...")
-for i in range(5):
-    print(".")
-    time.sleep(1)
+def exec_gcov_on_source():
+    for source in source_list:
+        # Call for all source file
+        #print(source)
+        # TODO: Argument
+        source = source.replace("\\", "/")
+        gcno_file_path = __gcov_file_dir + source + ".gcno"
+
+        #print("file: '{}'".format(gcno_file_path))
+        if os.path.exists(gcno_file_path):
+            # Call
+            command = __COMMAND + " " + __COMMAND_ARG + " " + gcno_file_path
+            print("Command: {}".format(command))
+            #subprocess.run(["ls", "-l"])
+            #subprocess.run([__COMMAND, command_arg])
+            return_code = subprocess.call(command, shell=True)
+            # Debug code
+            #print("  Return code: {}".format(return_code))
+        else:
+            # Do not call
+            print("'{}' has no gcno file".format(source))
 
 
-print("CWD:")
-print(os.getcwd())
-print()
+def wait():
+    print("Wait...")
+    for i in range(5):
+        print(".")
+        time.sleep(1)
 
-print("----------------------------------------")
-print("Start gcov parseing...")
-print()
-gcov_file_list = glob.glob("*.gcov")
+
+gcov_file_list = None
+
+def set_workdir_for_parse_gcov():
+    print("CWD:")
+    print(os.getcwd())
+    print()
+
+    print("----------------------------------------")
+    print("Start gcov parseing...")
+    print()
+
+    global gcov_file_list
+    gcov_file_list = glob.glob("*.gcov")
 
 
 
@@ -220,12 +234,13 @@ void function()
 
 """
 
-#regex_function_detect = re.compile(r"^[\w\* ]+ (?P<function_name>\w*) *\( *[\w\,\*\_ ]* *\)")
 regex_function_detect = re.compile(r"^ *([\w]+[\w\* ]*) (?P<function_name>[^\(\=\? ]+) *\( *[^\)\=\>\<.]+ *\) *\{*$")
 
 gcov_info_list = {}
 
 def parse_gcov_file(file_path):
+    global gcov_info_list
+
     with open(file_path, 'r') as file:
         print("Start gcov parseing: '{}'".format(file_path))
         file_name = file_path.split(".gcov")[0]
@@ -287,31 +302,65 @@ def parse_gcov_file(file_path):
                     # not in function, dont care, go out
                     pass
 
-# Check all gcovs
-for gcov_file in gcov_file_list:
-    print(gcov_file)
-    parse_gcov_file(gcov_file)
+def check_gcov_files():
+    # Check all gcovs
+    for gcov_file in gcov_file_list:
+        print(gcov_file)
+        parse_gcov_file(gcov_file)
 
-# Print gcov result
-gcov_export_file = open("GccCoverage.txt", "w+")
 
-def gcov_print(str):
-    print(str)
-    gcov_export_file.write(str + "\n")
+def print_gcov_results():
+    # Print gcov result
+    gcov_export_file = open("GccCoverage.txt", "w+")
 
-for gcov_file in gcov_info_list:
-    # Functions
-    gcov_print("File: {}".format(gcov_file))
-    for function in gcov_info_list[gcov_file]:
-        gcov_print("  Function: {} at line {}".format(
-            function,
-            gcov_info_list[gcov_file][function]["function_decl_line"]))
-        # Could print all dictionary, but not necessary, if the function has not covered
-        if gcov_info_list[gcov_file][function]["covered_function"]:
-            gcov_print("    " + "Tested")
-            for branch_item in gcov_info_list[gcov_file][function]["coverage"]:
-                gcov_print("      " + str(branch_item[0]) + ": " + str(branch_item[1]))
-        else:
-            gcov_print("    " + "Not tested")
+    def gcov_print(str):
+        print(str)
+        gcov_export_file.write(str + "\n")
 
-gcov_export_file.close()
+    for gcov_file in gcov_info_list:
+        # Functions
+        gcov_print("File: {}".format(gcov_file))
+        for function in gcov_info_list[gcov_file]:
+            gcov_print("  Function: {} at line {}".format(
+                function,
+                gcov_info_list[gcov_file][function]["function_decl_line"]))
+            # Could print all dictionary, but not necessary, if the function has not covered
+            if gcov_info_list[gcov_file][function]["covered_function"]:
+                gcov_print("    " + "Tested")
+                for branch_item in gcov_info_list[gcov_file][function]["coverage"]:
+                    gcov_print("      " + str(branch_item[0]) + ": " + str(branch_item[1]))
+            else:
+                gcov_print("    " + "Not tested")
+
+    gcov_export_file.close()
+
+
+def run_gcov_task():
+    set_workdir()
+
+    find_sources()
+
+    restore_workdir()
+
+    exec_gcov_on_source()
+    wait()
+
+    set_workdir_for_parse_gcov()
+
+    check_gcov_files()
+
+    print_gcov_results()
+
+
+if __name__ == "__main__":
+    """
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-fl", "--file_list", help="List of analyzing files", default="**/*.log")
+    parser.add_argument("-cmp", "--compiler", help="Compiler", default="MSVC")
+
+    args = parser.parse_args()
+    check_files(file_list=args.file_list, compiler=args.compiler)
+    """
+
+    run_gcov_task()
