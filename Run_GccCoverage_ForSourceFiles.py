@@ -28,7 +28,10 @@ cwd_is_changed = False
 cwd = None
 
 def set_workdir(dir):
-    print("Set working directory to: {}".format(dir))
+    print("Set working directory to: {}\n"
+          "  Absolute path:".format(
+            dir,
+            os.path.abspath(dir)))
     os.chdir(dir)
 
 
@@ -36,6 +39,7 @@ source_list = []
 
 def find_sources():
     # Source list
+    # TODO: Move
     global source_list
     source_list += glob.glob("Src/*.c")
     source_list += glob.glob("Src/**/*.c")
