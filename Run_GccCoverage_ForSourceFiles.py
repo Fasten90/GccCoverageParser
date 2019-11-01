@@ -268,14 +268,25 @@ for gcov_file in gcov_file_list:
     parse_gcov_file(gcov_file)
 
 # Print gcov result
-for file in gcov_info_list:
+gcov_export_file = open("GccCoverage.txt", "w+")
+
+def gcov_print(str):
+    print(str)
+    gcov_export_file.write(str + "\n")
+
+for gcov_file in gcov_info_list:
     # Functions
-    print("File: {}".format(file))
-    for function in gcov_info_list[file]:
-        print("  Function: {} at line {}".format(function, gcov_info_list[file][function]["function_decl_line"]))
+    gcov_print("File: {}".format(gcov_file))
+    for function in gcov_info_list[gcov_file]:
+        gcov_print("  Function: {} at line {}".format(
+            function,
+            gcov_info_list[gcov_file][function]["function_decl_line"]))
         # Could print all dictionary, but not necessary, if the function has not covered
-        if gcov_info_list[file][function]["covered_function"]:
-            print("    " + "Tested")
-            print("    " + str(gcov_info_list[file][function]["coverage"]))
+        if gcov_info_list[gcov_file][function]["covered_function"]:
+            gcov_print("    " + "Tested")
+            for branch_item in gcov_info_list[gcov_file][function]["coverage"]:
+                gcov_print("      " + str(branch_item[0]) + ": " + str(branch_item[1]))
         else:
-            print("    " + "Not tested")
+            gcov_print("    " + "Not tested")
+
+gcov_export_file.close()
