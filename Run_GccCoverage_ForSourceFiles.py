@@ -329,7 +329,7 @@ def run_gcov_task(source_root_dir=".",
     set_workdir(source_root_dir)
     find_sources()
 
-    #set_workdir(gcno_files_root)
+    set_workdir(gcov_file_root)
     exec_gcov_on_source(gcno_files_root)
     wait()
 
