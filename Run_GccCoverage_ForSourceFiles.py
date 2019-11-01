@@ -5,6 +5,13 @@ import time
 from enum import Enum
 import re
 
+# TODOs
+# - Input argument: gcov_file_dir
+# - Input argument: source root dir (../..)
+# - Input argument: Export file name
+# - UnitTest - comments at above
+# - UnitTest - system executing test
+
 
 # Note: Similar command shall be called all gcno file
 # gcov --all-blocks --function-summaries --branch-probabilities --branch-counts --unconditional-branches CMakeFiles/FastenHomeAut.dir/Src/main.c.gcno
@@ -102,6 +109,24 @@ print("Start gcov parseing...")
 print()
 gcov_file_list = glob.glob("*.gcov")
 
+
+
+# TODO: Handle another format of lines
+"""
+function CircularBuffer_IsFull called 302 returned 100% blocks executed 100%
+
+call    0 returned 1
+
+call    0 never executed
+
+unconditional  0 taken 1
+
+    %%%%%:  144-block  0
+
+branch  0 taken 0 (fallthrough)
+
+       16:  128-block  0
+"""
 
 
 # TODO: UnitTest
