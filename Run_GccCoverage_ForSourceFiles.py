@@ -8,7 +8,6 @@ import re
 import argparse
 
 # TODOs
-# - UnitTest - comments at above
 # - UnitTest - system executing test
 
 
@@ -109,7 +108,7 @@ branch  0 taken 0 (fallthrough)
 """
 
 
-# TODO: UnitTest
+# Example
 """
       513:  871:    if ((str == NULL) || (value == NULL))
         -:  872:    {
@@ -145,7 +144,7 @@ def get_line_data(line):
 #     more line declarated functions
 #     MACRO FUNCTION
 
-# TODO: Move unittest
+# Example
 # https://regex101.com/r/PgMQnh/2
 """
 void function1(void)
@@ -169,8 +168,9 @@ void function9 ( uint8_t * ehh, Type_ omg )
 bool BUTTON_GetButtonState(ButtonType_t button)
 """
 
+
+# Examples
 """
-Wrong unittest
 /* Noooooooooooooo */
 /* Do not accept because the empty () */
 void function()
