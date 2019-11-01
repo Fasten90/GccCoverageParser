@@ -25,9 +25,10 @@ script_dir = os.path.normcase(os.path.normpath(os.path.dirname(__file__)))
 cwd_is_changed = False
 
 if cwd != script_dir:
-    #os.chdir("../..")
+    # Go down from /Tools/...
+    os.chdir("../../")
     cwd_is_changed = True
-    os.chdir(script_dir)
+    #os.chdir(script_dir)
     print("Working directory changed from: '{}' to '{}'".format(cwd, script_dir))
 
 # Source list
