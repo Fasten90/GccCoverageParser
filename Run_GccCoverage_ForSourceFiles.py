@@ -20,7 +20,6 @@ import argparse
 
 __COMMAND = "gcov"
 __COMMAND_ARG = "--all-blocks --function-summaries --branch-probabilities --branch-counts --unconditional-branches"
-__gcov_file_dir = "CMakeFiles/FastenHomeAut.dir/"
 
 
 source_list = []
@@ -69,7 +68,7 @@ def exec_gcov_on_source():
         #print(source)
         # TODO: Argument
         source = source.replace("\\", "/")
-        gcno_file_path = __gcov_file_dir + source + ".gcno"
+        gcno_file_path = source + ".gcno"
 
         #print("file: '{}'".format(gcno_file_path))
         if os.path.exists(gcno_file_path):
