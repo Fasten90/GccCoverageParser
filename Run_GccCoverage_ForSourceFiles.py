@@ -289,9 +289,11 @@ def check_gcov_files():
         parse_gcov_file(gcov_file)
 
 
-def print_gcov_results():
+def print_gcov_results(export_file_path="GccCoverage.txt"):
     # Print gcov result
-    gcov_export_file = open("GccCoverage.txt", "w+")
+    export_file_path = os.path.abspath(export_file_path)
+    print("Export file to '{}'".format(export_file_path))
+    gcov_export_file = open(export_file_path, "w+")
 
     def gcov_print(str):
         print(str)
@@ -332,7 +334,7 @@ def run_gcov_task(gcov_file_root=".",
 
     check_gcov_files()
 
-    print_gcov_results()
+    print_gcov_results(export_file_path)
 
 
 if __name__ == "__main__":
