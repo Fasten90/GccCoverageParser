@@ -30,7 +30,7 @@ def set_workdir(dir):
     print("Set working directory to: {}\n"
           "  Absolute path:".format(
             dir,
-            os.path.normpath(dir)))
+            os.path.abspath(os.path.normpath(dir))))
     os.chdir(dir)
 
 
@@ -314,21 +314,25 @@ def print_gcov_results(export_file_path="GccCoverage.txt"):
     gcov_export_file.close()
 
 
-def run_gcov_task(gcov_file_root=".",
-                  source_root_dir=".",
+def run_gcov_task(source_root_dir=".",
+                  gcno_files_root=".",
+                  gcov_file_root=".",
                   export_file_path="GccCoverage.txt"):
 
-    set_workdir(source_root_dir)
+    # Calculate from actual dir
+    source_root_dir = os.path.abspath(source_root_dir)
+    gcno_files_root = os.path.abspath(gcno_files_root)
+    gcov_file_root = os.path.abspath(gcov_file_root)
+    export_file_path = os.path.abspath(export_file_path)
 
+    set_workdir(source_root_dir)
     find_sources()
 
-    set_workdir(gcov_file_root)
-
+    set_workdir(gcno_files_root)
     exec_gcov_on_source()
     wait()
 
-    #set_workdir_for_parse_gcov()
-
+    set_workdir(gcov_file_root)
     check_gcov_files()
 
     print_gcov_results(export_file_path)
@@ -336,17 +340,25 @@ def run_gcov_task(gcov_file_root=".",
 
 if __name__ == "__main__":
     # - Input argument: gcov_file_dir
-    # - Input argument: source root dir (../..)
+    # - Input argument: source root dir (/)
     # - Input argument: Export file name
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--gcov-files-root",
-                        help="where will be generated the gcov files\n" \
-                             "E.g. Out\CMakeDir",
-                        default=".")
+    """CMakeFiles\FastenHomeAut.dir"""
     parser.add_argument("--source-root-dir",
                         help="Directory of sources",
                         default=".")
+
+    parser.add_argument("--gcno-files-root",
+                help="where will have been generated the gcno files\n" \
+                     "E.g. Out\CMakeDir\CMakeFiles\Project.dir",
+                default=".")
+
+    parser.add_argument("--gcov-files-root",
+                help="where will be generated the gcov files\n" \
+                     "E.g. Out\CMakeDir",
+                default=".")
+
     parser.add_argument("--export-file-path",
                         help="Result export file path",
                         default="GccCoverage.txt")
@@ -354,5 +366,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_gcov_task(gcov_file_root=args.gcov_files_root,
+                  gcno_files_root=args.gcno_files_root,
                   source_root_dir=args.source_root_dir,
                   export_file_path=args.export_file_path)
