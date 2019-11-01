@@ -91,19 +91,6 @@ def wait():
 
 gcov_file_list = None
 
-def set_workdir_for_parse_gcov():
-    print("CWD:")
-    print(os.getcwd())
-    print()
-
-    print("----------------------------------------")
-    print("Start gcov parseing...")
-    print()
-
-    global gcov_file_list
-    gcov_file_list = glob.glob("*.gcov")
-
-
 
 # TODO: Handle another format of lines
 """
@@ -283,6 +270,13 @@ def parse_gcov_file(file_path):
                     pass
 
 def check_gcov_files():
+    print("----------------------------------------")
+    print("Start gcov parseing...")
+    print()
+
+    global gcov_file_list
+    gcov_file_list = glob.glob("*.gcov")
+
     # Check all gcovs
     for gcov_file in gcov_file_list:
         print(gcov_file)
@@ -330,7 +324,7 @@ def run_gcov_task(gcov_file_root=".",
     exec_gcov_on_source()
     wait()
 
-    set_workdir_for_parse_gcov()
+    #set_workdir_for_parse_gcov()
 
     check_gcov_files()
 
