@@ -32,6 +32,7 @@ def set_workdir(dir):
 
 source_list = []
 
+
 def find_sources():
     # Source list
     # TODO: Move
@@ -70,9 +71,8 @@ def exec_gcov_on_source(files_root):
         #print("file: '{}'".format(gcno_file_path))
         if os.path.exists(gcno_file_path):
             # Call
-            command = __COMMAND + " " + __COMMAND_ARG + " " + gcno_file_path
             print("Command: {}".format(command))
-            return_code = subprocess.call(command, shell=True)
+            return_code = subprocess.call([__COMMAND , __COMMAND_ARG, gcno_file_path], shell=True)
             # Debug code
             #print("  Return code: {}".format(return_code))
         else:
@@ -120,6 +120,7 @@ class gcov_info(Enum):
     UNKNOWN = 1
     UNCOVERED = 2
     COVERED = 3
+
 
 def get_line_data(line):
     try:
@@ -268,6 +269,7 @@ def parse_gcov_file(file_path):
                     # not in function, dont care, go out
                     pass
 
+
 def check_gcov_files():
     print("----------------------------------------")
     print("Start gcov parseing...")
@@ -337,7 +339,7 @@ def run_gcov_task(source_root_dir=".",
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    """CMakeFiles\FastenHomeAut.dir"""
+    # E.g. 'CMakeFiles\FastenHomeAut.dir'
     parser.add_argument("--source-root-dir",
                         help="Directory of sources",
                         default=".")
@@ -363,3 +365,4 @@ if __name__ == "__main__":
                   gcno_files_root=args.gcno_files_root,
                   gcov_file_root=args.gcov_files_root,
                   export_file_path=args.export_file_path)
+
