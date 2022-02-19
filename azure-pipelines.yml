@@ -29,6 +29,6 @@ steps:
     python --version
   
     #pip install -r requirements.txt
-  
-    :: python -m unittest discover tests/
+
+    echo 'Test the python with empty arguments - like a system test'
     python Run_GccCoverage_ForSourceFiles.py
