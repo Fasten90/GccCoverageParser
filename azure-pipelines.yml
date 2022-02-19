@@ -9,13 +9,26 @@ steps:
 - script: |
     echo 'Start pipeline'
   
-    :: Print the Linux version.
+    # Print the Linux version.
     uname -a
   
     python --version
   
-    ::pip install -r requirements.txt
+    #pip install -r requirements.txt  # Note: There is no requirements.txt
   
-    :: python -m unittest discover tests/
+    # python -m unittest discover tests/
     python -m unittest GccCoverageParser_UnitTest.py
 
+
+- script: |
+    echo 'Start pipeline'
+  
+    # Print the Linux version.
+    uname -a
+  
+    python --version
+  
+    #pip install -r requirements.txt
+  
+    :: python -m unittest discover tests/
+    python Run_GccCoverage_ForSourceFiles.py
