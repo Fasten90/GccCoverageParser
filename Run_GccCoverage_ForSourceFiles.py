@@ -71,7 +71,7 @@ def exec_gcov_on_source(files_root):
         #print("file: '{}'".format(gcno_file_path))
         if os.path.exists(gcno_file_path):
             # Call
-            print("Command: {}".format(command))
+            print("Command: {} {} {}".format(__COMMAND, __COMMAND_ARG, gcno_file_path))
             return_code = subprocess.call([__COMMAND , __COMMAND_ARG, gcno_file_path], shell=True)
             # Debug code
             #print("  Return code: {}".format(return_code))
